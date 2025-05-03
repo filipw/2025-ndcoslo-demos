@@ -1,1 +1,5 @@
 git+https://github.com/filipw/collapse.git#egg=collapse
+ipykernel
+qsharp
+nbformat
+plotly
