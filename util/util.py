@@ -5,7 +5,8 @@ from qsharp import Result
 
 def plot(
     results: list,
-    title: str
+    title: str,
+    hide_empty: bool = False
 ) -> None:
     first = results[0] if results else None
     if isinstance(first, (list, tuple)):
@@ -18,6 +19,10 @@ def plot(
         all_strs = ["".join(p) for p in product("01", repeat=n_qubits)]
         for bs in all_strs:
             counts.setdefault(bs, 0)
+            
+        if hide_empty:
+            all_strs = [bs for bs in all_strs if counts[bs] > 0]
+            
         display_outcomes = [f"|{bs}⟩" for bs in all_strs]
         freqs = [counts[bs] for bs in all_strs]
     else:
@@ -25,8 +30,14 @@ def plot(
         counts = Counter(labels)
         for key in ("0", "1"):
             counts.setdefault(key, 0)
-        display_outcomes = ["|0⟩", "|1⟩"]
-        freqs = [counts["0"], counts["1"]]
+            
+        if hide_empty:
+            keys = [k for k in ("0", "1") if counts[k] > 0]
+            display_outcomes = [f"|{k}⟩" for k in keys]
+            freqs = [counts[k] for k in keys]
+        else:
+            display_outcomes = ["|0⟩", "|1⟩"]
+            freqs = [counts["0"], counts["1"]]
 
     fig = go.Figure(
         data=go.Bar(
